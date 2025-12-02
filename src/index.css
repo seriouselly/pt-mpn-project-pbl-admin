@@ -217,3 +217,17 @@ body.dark {
   --sidebar-accent-foreground: hsl(210, 40%, 98%);
   --sidebar-border: hsl(215, 28%, 25%);
 }
+
+/* Card modern styles */
+.card-modern { border-radius: 12px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.04); overflow: hidden; }
+
+/* Modal backdrop defaults already inline, add button basics */
+.btn { cursor: pointer; border: 0; padding: 8px 12px; border-radius: 8px; }
+.btn-primary { background: #2b7cff; color: #fff; }
+.btn-outline { background: transparent; border: 1px solid #d1d7de; color: #21313a; }
+.btn-danger { background: #e03b3b; color: #fff; }
+.btn-ghost { background: transparent; color: #21313a; border: none; }
+.form-control { padding: 8px 10px; border-radius: 8px; border: 1px solid #e6edf2; }
+.page-container { padding: 20px; }
+.grid-cards { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media(min-width:900px){ .grid-cards { grid-template-columns: 1fr 1fr; } }
