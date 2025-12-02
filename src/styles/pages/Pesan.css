@@ -1,0 +1,131 @@
+/* src/styles/pages/Pesan.css */
+
+.pesan-container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden; /* Agar border radius tabel rapi */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.search-bar-wrapper {
+  padding: 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.search-input {
+  max-width: 400px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.6rem 1rem 0.6rem 2.5rem; /* Space untuk icon search */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 10px center;
+}
+
+/* Tabel Styling */
+.table-custom {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-custom thead {
+  background-color: #f8fafc;
+  color: #64748b;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.table-custom th,
+.table-customtd {
+  padding: 1rem 1.5rem;
+  text-align: left;
+}
+
+.table-custom tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.1s;
+}
+
+.table-custom tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.pesan-sender {
+  font-weight: 600;
+  color: #1e293b;
+  display: block;
+}
+
+.pesan-email {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.pesan-preview {
+  color: #334155;
+  font-size: 0.95rem;
+  max-width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pesan-unread {
+  border-left: 3px solid #f97316;
+  background-color: #fff7ed;
+}
+
+/* Modal Overlay Styles */
+.modal-overlay-custom {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s;
+}
+
+.modal-overlay-custom.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content-custom {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+  transform: translateY(20px);
+  transition: transform 0.2s;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.modal-overlay-custom.open .modal-content-custom {
+  transform: translateY(0);
+}
+
+.detail-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 0.2rem;
+  font-weight: 600;
+}
+
+.detail-value {
+  font-size: 1rem;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+}
