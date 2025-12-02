@@ -1,68 +1,219 @@
+/* ===============================
+   Variable Design System
+   =============================== */
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  /* Background & foreground */
+  --background: hsl(210, 40%, 98%);
+  --foreground: hsl(215, 25%, 15%);
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* Card & popover */
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(215, 25%, 15%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(215, 25%, 15%);
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* Primary & secondary */
+  --primary: hsl(217, 91%, 40%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(210, 40%, 96%);
+  --secondary-foreground: hsl(215, 25%, 15%);
+
+  /* Accent, destructive, border */
+  --accent: hsl(27, 96%, 61%);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border: hsl(214, 32%, 91%);
+  --input: hsl(214, 32%, 91%);
+  --ring: hsl(217, 91%, 40%);
+  --radius: 0.5rem;
+
+  /* Sidebar */
+  --sidebar-background: hsl(217, 91%, 40%);
+  --sidebar-foreground: hsl(210, 40%, 98%);
+  --sidebar-primary: hsl(0, 0%, 100%);
+  --sidebar-primary-foreground: hsl(217, 91%, 40%);
+  --sidebar-accent: hsl(217, 91%, 35%);
+  --sidebar-accent-foreground: hsl(0, 0%, 100%);
+  --sidebar-border: hsl(217, 91%, 35%);
+  --sidebar-ring: hsl(27, 96%, 61%);
+
+  /* Status */
+  --success: hsl(142, 71%, 45%);
+  --success-foreground: hsl(0, 0%, 100%);
+  --warning: hsl(38, 92%, 50%);
+  --warning-foreground: hsl(0, 0%, 100%);
+  --info: hsl(199, 89%, 48%);
+  --info-foreground: hsl(0, 0%, 100%);
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+/* ===============================
+   Reset Dasar
+   =============================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  height: 100vh;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ===============================
+   Sidebar
+   =============================== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 250px;
+  background-color: var(--sidebar-background);
+  color: var(--sidebar-foreground);
+  border-right: 1px solid var(--sidebar-border);
+  transition: width 0.3s;
   display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  flex-direction: column;
+  z-index: 1000;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+.sidebar.collapsed {
+  width: 64px;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+.sidebar-header {
+  height: 60px;
+}
+
+.logo-box {
+  width: 32px;
+  height: 32px;
+  background-color: var(--accent);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-text {
+  color: var(--accent-foreground);
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.company-name {
+  font-weight: 600;
+}
+
+.btn-toggle {
+  background: transparent;
+  border: none;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  padding: 4px;
+  transition: transform 0.3s;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.chevron-icon.rotated {
+  transform: rotate(180deg);
+  transition: transform 0.3s;
+}
+
+.sidebar-menu {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sidebar-item {
+  color: var(--sidebar-foreground);
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-item:hover {
+  background-color: var(--sidebar-accent);
+  color: var(--sidebar-accent-foreground);
+}
+
+.sidebar-item.active {
+  background-color: var(--sidebar-accent);
+  color: var(--sidebar-accent-foreground);
+  font-weight: 500;
+}
+
+.sidebar-item svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ===============================
+   Card & Table
+   =============================== */
+.stat-card {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.table-container {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* ===============================
+   Utility
+   =============================== */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+/* Scrollbar untuk sidebar */
+.sidebar-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 3px;
+}
+
+/* ===============================
+   Dark Mode (opsional)
+   =============================== */
+body.dark {
+  --background: hsl(215, 28%, 17%);
+  --foreground: hsl(210, 40%, 98%);
+
+  --card: hsl(215, 28%, 20%);
+  --card-foreground: hsl(210, 40%, 98%);
+
+  --sidebar-background: hsl(215, 28%, 20%);
+  --sidebar-foreground: hsl(210, 40%, 98%);
+  --sidebar-accent: hsl(215, 28%, 25%);
+  --sidebar-accent-foreground: hsl(210, 40%, 98%);
+  --sidebar-border: hsl(215, 28%, 25%);
 }

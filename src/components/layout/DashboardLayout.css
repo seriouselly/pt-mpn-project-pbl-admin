@@ -1,0 +1,11 @@
+.dashboard-layout {
+  display: flex;
+}
+
+/* Kontainer main-content */
+.main-content {
+  flex-grow: 1;
+  transition: margin-left 0.3s;
+  min-height: 100vh;
+  background-color: var(--background, #f9f9f9);
+}
