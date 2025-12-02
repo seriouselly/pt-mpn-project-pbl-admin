@@ -1,0 +1,123 @@
+/* ============================
+   LOGIN PAGE STYLING 
+   ============================ */
+
+.login-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--background);
+}
+
+.login-card {
+  width: 380px;
+  padding: 2rem;
+  border-radius: var(--radius);
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  color: var(--foreground);
+}
+
+/* Logo */
+.login-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.5rem auto;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.login-title {
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.login-subtitle {
+  text-align: center;
+  font-size: 0.9rem;
+  opacity: 0.7;
+  margin-bottom: 1rem;
+}
+
+/* Error box */
+.login-error {
+  background: var(--destructive);
+  color: var(--destructive-foreground);
+  padding: 0.5rem;
+  border-radius: 6px;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+/* Form */
+.login-group {
+  margin-bottom: 1rem;
+}
+
+.login-group label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+}
+
+.login-input {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid var(--input);
+  background-color: var(--card);
+  color: var(--foreground);
+  outline: none;
+}
+
+.login-input:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* Button */
+.login-btn {
+  width: 100%;
+  padding: 0.7rem;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.login-btn:hover {
+  opacity: 0.9;
+}
+
+.login-btn:active {
+  transform: scale(0.97);
+}
+
+.login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Demo Credential */
+.login-demo {
+  margin-top: 1rem;
+  background-color: var(--secondary);
+  padding: 0.7rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  text-align: center;
+  opacity: 0.8;
+}

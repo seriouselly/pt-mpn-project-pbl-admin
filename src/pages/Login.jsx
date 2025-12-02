@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import "../styles/pages/Login.css";
 
 export default function Login() {
   const { login, isAuthenticated } = useAuth();
@@ -11,12 +12,10 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  // Auto redirect jika user sudah login
   useEffect(() => {
     if (isAuthenticated) navigate("/dashboard");
   }, [isAuthenticated, navigate]);
 
-  // Submit login
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -34,33 +33,22 @@ export default function Login() {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
-      <div className="card p-4 shadow-lg" style={{ width: "380px" }}>
+    <div className="login-container">
+      <div className="login-card">
         
-        {/* Logo */}
-        <div className="text-center mb-3">
-          <div
-            className="rounded-3 bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-2"
-            style={{ width: 60, height: 60 }}
-          >
-            <strong>MPN</strong>
-          </div>
-          <h4 className="fw-bold">Admin Dashboard</h4>
-          <p className="text-muted small">PT MULTIARTHA PUNDIMAS NAWASENA</p>
-        </div>
+        <div className="login-logo">MPN</div>
 
-        {/* Error */}
-        {errorMsg && (
-          <div className="alert alert-danger py-2 text-center">{errorMsg}</div>
-        )}
+        <h3 className="login-title">Admin Dashboard</h3>
+        <p className="login-subtitle">PT MULTIARTHA PUNDIMAS NAWASENA</p>
 
-        {/* Form login */}
+        {errorMsg && <div className="login-error">{errorMsg}</div>}
+
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
+          <div className="login-group">
             <label>Email</label>
             <input
               type="email"
-              className="form-control"
+              className="login-input"
               placeholder="admin@mpn.co.id"
               required
               value={email}
@@ -68,11 +56,11 @@ export default function Login() {
             />
           </div>
 
-          <div className="mb-3">
+          <div className="login-group">
             <label>Password</label>
             <input
               type="password"
-              className="form-control"
+              className="login-input"
               placeholder="••••••••"
               required
               value={password}
@@ -80,17 +68,12 @@ export default function Login() {
             />
           </div>
 
-          <button
-            className="btn btn-primary w-100"
-            type="submit"
-            disabled={loading}
-          >
+          <button className="login-btn" type="submit" disabled={loading}>
             {loading ? "Memproses..." : "Login"}
           </button>
         </form>
 
-        {/* Demo credential */}
-        <div className="mt-3 p-2 bg-light rounded text-center small text-muted">
+        <div className="login-demo">
           <strong>Demo Login</strong> <br />
           Email: admin@mpn.co.id <br />
           Password: admin123

@@ -1,29 +1,4 @@
-import React from "react";
-import { LogOut } from "lucide-react";
-import "./Navbar.css";
-
-// const Navbar = ({ onLogout }) => {
-//   return (
-//     <nav className="navbar d-flex align-items-center justify-content-end px-3 shadow-sm">
-//       {/* Avatar */}
-//       <div className="avatar me-3">
-//         <img
-//           src="https://i.pravatar.cc/40"
-//           alt="User Avatar"
-//           className="rounded-circle"
-//         />
-//       </div>
-
-//       {/* Tombol Logout */}
-//       <button className="btn btn-logout d-flex align-items-center" onClick={onLogout}>
-//         <LogOut className="me-2" />
-//         <span>Logout</span>
-//       </button>
-//     </nav>
-//   );
-// };
-
-// export default Navbar;
+import "../../styles/components/Navbar.css";
 
 import { useAuth } from "../../contexts/AuthContext";
 

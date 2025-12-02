@@ -1,4 +1,3 @@
-import React from "react";
 import { NavLink } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -9,7 +8,7 @@ import {
   Star, 
   ChevronLeft 
 } from "lucide-react";
-import "./Sidebar.css";
+import "../../styles/components/Sidebar.css";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },

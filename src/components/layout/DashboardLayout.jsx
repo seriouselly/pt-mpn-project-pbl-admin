@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Navbar from "./Navbar";
-import "./DashboardLayout.css";
+import "../../styles/components/DashboardLayout.css";
 import Sidebar from "./SideBar";
 
 const DashboardLayout = ({ children }) => {
