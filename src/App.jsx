@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
-import Layanan from "./pages/Layanan";
 import { AuthProvider } from "./contexts/AuthContext";
-import Login from "./pages/Login";
 import PrivateRoute from "./routes/PrivateRoute";
+
+// Pages
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 import Pelatihan from "./pages/Pelatihan";
+import Layanan from "./pages/Layanan";
 import Profil from "./pages/ProfilPerusahaan";
 import Pesan from "./pages/Pesan";
 import Testimoni from "./pages/Testimoni";
+import AdminPage from "./pages/Admin"; // Import Admin Page
 
 function App() {
   return (
@@ -18,67 +21,17 @@ function App() {
           {/* Public */}
           <Route path="/login" element={<Login />} />
 
-          {/* Protected Dashboard */}
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          />
-
-          {/* Protected Pelatihan */}
-          <Route
-            path="/pelatihan"
-            element={
-              <PrivateRoute>
-                <Pelatihan />
-              </PrivateRoute>
-            }
-          />
-          {/* pelatihan/:id */}
-
-          {/* Protected Layanan */}
-          <Route
-            path="/layanan"
-            element={
-              <PrivateRoute>
-                <Layanan />
-              </PrivateRoute>
-            }
-          />
-
-          {/* Protected Profil */}
-          <Route
-            path="/profil-perusahaan"
-            element={
-              <PrivateRoute>
-                <Profil />
-              </PrivateRoute>
-            }
-          />
-
-          {/* Protected Pesan Kontak */}
-          <Route
-            path="/pesan-kontak"
-            element={
-              <PrivateRoute>
-                <Pesan />
-              </PrivateRoute>
-            }
-          />
-          {/* /pesan-kontak/:id */}
-
-          {/* Protected Testimoni */}
-          <Route
-            path="/testimoni"
-            element={
-              <PrivateRoute>
-                <Testimoni />
-              </PrivateRoute>
-            }
-          />
+          {/* Protected Routes */}
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/pelatihan" element={<PrivateRoute><Pelatihan /></PrivateRoute>} />
+          <Route path="/layanan" element={<PrivateRoute><Layanan /></PrivateRoute>} />
+          <Route path="/profil-perusahaan" element={<PrivateRoute><Profil /></PrivateRoute>} />
+          <Route path="/pesan-kontak" element={<PrivateRoute><Pesan /></PrivateRoute>} />
+          <Route path="/testimoni" element={<PrivateRoute><Testimoni /></PrivateRoute>} />
+          
+          {/* Admin Route (Hanya bisa diakses jika Sidebar menampilkannya, 
+              tapi backend juga akan memblokir request jika bukan superadmin) */}
+          <Route path="/admin" element={<PrivateRoute><AdminPage /></PrivateRoute>} />
 
           {/* Default redirect */}
           <Route path="*" element={<Login />} />

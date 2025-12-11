@@ -1,26 +1,36 @@
-const KEY = "app_testimoni_v1";
-const seed = [
-  { id: 1, nama: "Andi", testimoni: "Sangat membantu!", foto: "" },
-  { id: 2, nama: "Budi", testimoni: "Pelayanan cepat.", foto: "" },
-];
+import axiosClient from "./axiosClient";
 
-function load() {
-  const raw = localStorage.getItem(KEY);
-  if (!raw) { localStorage.setItem(KEY, JSON.stringify(seed)); return [...seed]; }
-  return JSON.parse(raw);
+export async function getTestimoni() {
+  const response = await axiosClient.get("/api/testimoni");
+  // Backend Testimoni mengembalikan object: { data: [...] }
+  return response.data.data || []; 
 }
-function save(d) { localStorage.setItem(KEY, JSON.stringify(d)); }
 
-export async function getTestimoni() { return { data: load() }; }
-export async function createTestimoni(item) {
-  const db = load();
-  const newItem = { ...item, id: Date.now() };
-  db.push(newItem); save(db); return { data: newItem };
+export async function createTestimoni(data) {
+  const formData = new FormData();
+  formData.append("nama", data.nama);
+  formData.append("pesan_testi", data.testimoni); 
+  if (data.foto_file) formData.append("foto", data.foto_file);
+
+  const response = await axiosClient.post("/api/testimoni/add", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
 }
-export async function updateTestimoni(id, item) {
-  const db = load().map(d => d.id === id ? { ...d, ...item } : d);
-  save(db); return { success: true };
+
+export async function updateTestimoni(id, data) {
+  const formData = new FormData();
+  formData.append("nama", data.nama);
+  formData.append("pesan_testi", data.testimoni);
+  if (data.foto_file) formData.append("foto", data.foto_file);
+
+  const response = await axiosClient.put(`/api/testimoni/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
 }
+
 export async function deleteTestimoni(id) {
-  const db = load().filter(d => d.id !== id); save(db); return { success: true };
+  const response = await axiosClient.delete(`/api/testimoni/${id}`);
+  return response.data;
 }

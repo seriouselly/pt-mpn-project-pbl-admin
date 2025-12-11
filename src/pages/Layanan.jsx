@@ -1,137 +1,184 @@
-import React, { useEffect, useState, useMemo } from "react";
-import DashboardLayout from '../components/layout/DashboardLayout';
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import DashboardLayout from "../components/layout/DashboardLayout";
 import CardItem from "../components/CardItem";
 import ModalItem from "../components/ModalItem";
 import Pagination from "../components/Pagination";
-import { getLayanan, createLayanan, updateLayanan, deleteLayanan, resetDatabase } from "../api/layananApi";
+import { getLayanan, createLayanan, updateLayanan, deleteLayanan } from "../api/layananApi";
 import { ToastContainer, toast } from "react-toastify";
+import { Briefcase, ArrowUpDown, Plus } from "lucide-react";
 
-export default function LayananLayanan() {
+// Helper URL Gambar
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://202.10.47.174:8000";
+
+export default function Layanan() {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState({ key: null, dir: "asc" });
-
-  // pagination
+  const [sort, setSort] = useState({ key: null, dir: "asc" }); // Fitur Sort
   const [page, setPage] = useState(1);
   const [limit] = useState(6);
+  const [loading, setLoading] = useState(true);
 
-  // modal + form
   const [show, setShow] = useState(false);
-  const [form, setForm] = useState({ id: null, nama: "", deskripsi: "", status: "Active", foto: "" });
+  const [form, setForm] = useState({ id: null, nama: "", deskripsi: "", gambar: "", gambar_file: null });
 
-  const load = async () => {
-    const res = await getLayanan();
-    setData(res.data || []);
-  };
-  useEffect(() => { load(); }, []);
+  // 1. Load Data
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await getLayanan();
+      const rawData = Array.isArray(res) ? res : (res.data || []);
+      
+      const mapped = rawData.map(item => ({
+        ...item,
+        id: item.id_BUsaha,
+        nama: item.nama_BUsaha,
+        deskripsi: item.deskripsi,
+        // Gambar Backend
+        gambar: item.poto ? (item.poto.startsWith("http") ? item.poto : `${BASE_URL}/${item.poto}`) : null
+      }));
+      setData(mapped);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  // filtering
-  const filtered = useMemo(() => {
-    const q = (search || "").trim().toLowerCase();
-    return data.filter(d => !q || (d.nama || "").toLowerCase().includes(q) || (d.deskripsi || "").toLowerCase().includes(q));
-  }, [data, search]);
+  useEffect(() => { load(); }, [load]);
 
-  // sorting
-  const sorted = useMemo(() => {
-    if (!sort.key) return filtered;
-    const s = [...filtered].sort((a, b) => {
-      const A = (a[sort.key] || "").toString().toLowerCase();
-      const B = (b[sort.key] || "").toString().toLowerCase();
-      if (A < B) return sort.dir === "asc" ? -1 : 1;
-      if (A > B) return sort.dir === "asc" ? 1 : -1;
-      return 0;
-    });
-    return s;
-  }, [filtered, sort]);
+  // 2. Logic Sortir & Filter
+  const processedData = useMemo(() => {
+    let result = [...data];
 
-  const totalPage = Math.max(1, Math.ceil(sorted.length / limit));
-  const paginated = sorted.slice((page - 1) * limit, page * limit);
+    // Filter
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(d => d.nama.toLowerCase().includes(q));
+    }
 
+    // Sortir (Fitur khas Layanan)
+    if (sort.key) {
+      result.sort((a, b) => {
+        const valA = (a[sort.key] || "").toString().toLowerCase();
+        const valB = (b[sort.key] || "").toString().toLowerCase();
+        if (valA < valB) return sort.dir === "asc" ? -1 : 1;
+        if (valA > valB) return sort.dir === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+    return result;
+  }, [data, search, sort]);
+
+  const totalPage = Math.max(1, Math.ceil(processedData.length / limit));
+  const paginated = processedData.slice((page - 1) * limit, page * limit);
+
+  // 3. Handlers
   const changeSort = (key) => {
-    setSort(s => s.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" });
+    setSort(prev => ({
+      key,
+      dir: prev.key === key && prev.dir === "asc" ? "desc" : "asc"
+    }));
   };
 
-  const toBase64 = (file) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+  const submit = async () => {
+    if (!form.nama) { toast.warn("Nama layanan wajib diisi"); return; }
+    
+    // Trik Deskripsi
+    let safeDeskripsi = form.deskripsi || "";
+    if (safeDeskripsi.trim().length < 10) safeDeskripsi += " (Deskripsi layanan)";
 
-  const handleSubmit = async () => {
-    if (!form.nama || !form.deskripsi) { toast.warn("Nama & deskripsi wajib"); return; }
+    const payload = { ...form, deskripsi: safeDeskripsi };
 
-    const payload = { ...form };
-
-    if (form.foto_file) {
-      try {
-        payload.foto = await toBase64(form.foto_file);
-      } catch (e) {
-        console.error(e);
+    try {
+      if (form.id) {
+        await updateLayanan(form.id, payload);
+        toast.success("Layanan diperbarui");
+      } else {
+        await createLayanan(payload);
+        toast.success("Layanan ditambah");
       }
-      delete payload.foto_file;
+      setShow(false);
+      load();
+    } catch (e) {
+      console.error(e);
+      toast.error(e.message || "Gagal menyimpan data");
     }
-
-    if (form.id) {
-      await updateLayanan(form.id, payload); toast.success("Diperbarui");
-    } else {
-      await createLayanan(payload); toast.success("Ditambah");
-    }
-    setShow(false); setForm({ id: null, nama: "", deskripsi: "", status: "Active", foto: "" }); load();
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Hapus layanan?")) return;
-    await deleteLayanan(id); toast.success("Dihapus"); load();
+    if (!confirm("Hapus layanan ini?")) return;
+    try {
+      await deleteLayanan(id);
+      toast.success("Layanan dihapus");
+      load();
+    } catch (e) {
+      toast.error(e.message || "Gagal menghapus");
+    }
   };
 
   return (
     <DashboardLayout>
       <div className="page-container">
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
-          <div style={{ flex: 1 }}>
-            <h2>Manajemen Layanan</h2>
-            <div className="page-subtitle">Kelola layanan yang ditawarkan</div>
-          </div>
-
+        {/* Header */}
+        <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
-            <button className="btn btn-primary" onClick={() => { setForm({ id: null, nama: "", deskripsi: "", status: "Active", foto: "" }); setShow(true); }}>+ Tambah Layanan</button>
+            <h2 className="fw-bold d-flex align-items-center gap-2 mb-1">
+              <Briefcase size={28} className="text-primary"/> Layanan
+            </h2>
+            <p className="text-muted mb-0">Kelola Bidang Usaha Utama</p>
           </div>
+          <button className="btn btn-primary d-flex align-items-center gap-2" onClick={() => { 
+            setForm({ id: null, nama: "", deskripsi: "", gambar: "", gambar_file: null }); 
+            setShow(true); 
+          }}>
+            <Plus size={18} /> Tambah Layanan
+          </button>
         </div>
 
-        <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 18 }}>
-          <input className="form-control" placeholder="Cari layanan..." value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} style={{ width: 420 }} />
-          <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
-            <button className="btn btn-outline" onClick={() => { changeSort("nama"); }}>Sort Nama</button>
-            <button className="btn btn-outline" onClick={() => { changeSort("status"); }}>Sort Status</button>
-            <button className="btn btn-danger" onClick={async () => { if (!confirm("Reset DB?")) return; await resetDatabase(); toast.success("DB direset"); load(); }}>Reset Database</button>
+        {/* Toolbar: Search & Sort */}
+        <div className="bg-white p-3 rounded shadow-sm mb-4 d-flex justify-content-between align-items-center">
+          <input 
+            className="form-control" style={{maxWidth: 300}}
+            placeholder="Cari layanan..." 
+            value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} 
+          />
+          <button className={`btn btn-sm ${sort.key === 'nama' ? 'btn-info text-white' : 'btn-outline-secondary'} d-flex align-items-center gap-2`} onClick={() => changeSort("nama")}>
+            <ArrowUpDown size={14} /> Urutkan Nama
+          </button>
+        </div>
+
+        {/* --- TAMPILAN GRID KARTU (KHUSUS LAYANAN) --- */}
+        {loading ? <div className="text-center p-5">Memuat data...</div> : (
+          <div className="grid-cards">
+            {paginated.map(it => (
+              <CardItem 
+                key={it.id} 
+                variant="layanan" 
+                item={it} 
+                onEdit={() => { setForm(it); setShow(true); }} 
+                onDelete={() => handleDelete(it.id)} 
+              />
+            ))}
           </div>
-        </div>
+        )}
 
-        <div className="grid-cards">
-          {paginated.map(it => (
-            <CardItem key={it.id} variant="layanan" item={it} onEdit={() => { setForm(it); setShow(true); }} onDelete={() => handleDelete(it.id)} />
-          ))}
-        </div>
+        <Pagination page={page} totalPage={totalPage} onPage={setPage} />
 
-        <Pagination page={page} totalPage={totalPage} onPage={(p) => setPage(p)} />
-
+        {/* Modal Standar */}
         <ModalItem
           show={show}
           title={form.id ? "Edit Layanan" : "Tambah Layanan"}
           fields={[
-            { name: "nama", label: "Nama Layanan", type: "text" },
-            { name: "deskripsi", label: "Deskripsi", type: "textarea", rows: 4 },
-            { name: "foto", label: "Foto Layanan", type: "foto" },
-            { name: "status", label: "Status", type: "select", options: ["Active", "Inactive"] }
+            { name: "nama", label: "Nama Bidang Usaha", type: "text" },
+            { name: "deskripsi", label: "Deskripsi", type: "textarea" },
+            { name: "gambar", label: "Foto", type: "foto" }
           ]}
           value={form}
           onChange={setForm}
-          onSubmit={handleSubmit}
+          onSubmit={submit}
           onClose={() => setShow(false)}
         />
-
-        <ToastContainer position="top-right" />
+        <ToastContainer position="top-right"/>
       </div>
     </DashboardLayout>
   );
