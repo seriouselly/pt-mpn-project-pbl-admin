@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../components/layout/DashboardLayout";
 import { 
   GraduationCap, 
@@ -11,6 +12,7 @@ import { getDashboardStats } from "../api/dashboardApi";
 import "../styles/pages/Dashboard.css";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     pelatihan: 0,
     layanan: 0,
@@ -51,28 +53,32 @@ const Dashboard = () => {
       value: stats.pelatihan, 
       icon: GraduationCap, 
       bgClass: "bg-blue-soft",
-      subtext: "Data terdaftar"
+      subtext: "Data terdaftar",
+      path: "/pelatihan"
     },
     { 
       label: "Total Layanan", 
       value: stats.layanan, 
       icon: Briefcase, 
       bgClass: "bg-orange-soft",
-      subtext: "Bidang usaha aktif"
+      subtext: "Bidang usaha aktif",
+      path: "/layanan"
     },
     { 
       label: "Pesan Kontak", 
       value: stats.pesan, 
       icon: MessageSquare, 
       bgClass: "bg-cyan-soft",
-      subtext: "Pesan masuk"
+      subtext: "Pesan masuk",
+      path: "/pesan-kontak"
     },
     { 
       label: "Testimoni", 
       value: stats.testimoni, 
       icon: Star, 
       bgClass: "bg-yellow-soft",
-      subtext: "Ulasan pengguna"
+      subtext: "Ulasan pengguna",
+      path: "/testimoni"
     },
   ];
 
@@ -91,7 +97,11 @@ const Dashboard = () => {
             const IconComponent = stat.icon;
             return (
               <div className="col-12 col-md-6 col-xl-3" key={index}>
-                <div className="stat-card-clean">
+                <div 
+                  className="stat-card-clean"
+                  style={{ cursor: stat.path ? "pointer" : "default" }}
+                  onClick={() => stat.path && navigate(stat.path)}
+                >
                   <div className="stat-header">
                     <span className="stat-label">{stat.label}</span>
                     <div className={`stat-icon-wrapper ${stat.bgClass}`}>

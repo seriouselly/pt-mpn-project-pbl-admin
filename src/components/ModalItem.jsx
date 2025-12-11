@@ -24,6 +24,16 @@ export default function ModalItem({ show, title, fields = [], value = {}, onChan
                 <input className="form-control" value={value[f.name] || ''} onChange={(e) => handleFieldChange(f.name, e.target.value)} />
               )}
 
+              {f.type === 'password' && (
+                <input
+                  type="password"
+                  className="form-control"
+                  value={value[f.name] || ''}
+                  placeholder={f.placeholder || ''}
+                  onChange={(e) => handleFieldChange(f.name, e.target.value)}
+                />
+              )}
+
               {f.type === 'textarea' && (
                 <textarea className="form-control" rows={f.rows || 3} value={value[f.name] || ''} onChange={(e) => handleFieldChange(f.name, e.target.value)} />
               )}

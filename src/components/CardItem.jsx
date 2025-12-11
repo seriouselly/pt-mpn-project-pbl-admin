@@ -8,8 +8,8 @@ export default function CardItem({ item, variant, onEdit, onDelete }) {
           <img src={item.foto} alt="foto" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
       ) : (
-        <div style={{ width: 72, height: 72, flex: '0 0 72px', borderRadius: 8, background: '#f5f7fa', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9aa4b2' }}>
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M21 19V7a2 2 0 0 0-2-2h-1l-1-2H7L6 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a0 0 0 0 0 0z" stroke="#9aa4b2" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        <div style={{ width: 72, height: 72, flex: '0 0 72px', borderRadius: 8, background: '#f5f7fa', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9aa4b2', fontSize: 12 }}>
+          No IMG
         </div>
       )}
 
