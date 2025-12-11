@@ -7,7 +7,8 @@ import {
   MessageSquare, 
   Star, 
   ChevronLeft,
-  Shield // Icon untuk Admin
+  Shield,
+  Handshake // Partner
 } from "lucide-react";
 import "../../styles/components/Sidebar.css";
 import { useAuth } from "../../contexts/AuthContext"; // Import Auth untuk cek role
@@ -20,6 +21,7 @@ const Sidebar = ({ collapsed, onToggle }) => {
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
     { icon: GraduationCap, label: "Pelatihan", path: "/pelatihan" },
     { icon: Briefcase, label: "Layanan", path: "/layanan" },
+    { icon: Handshake, label: "Partner", path: "/partner" },
     { icon: Building2, label: "Profil Perusahaan", path: "/profil-perusahaan" },
     { icon: MessageSquare, label: "Pesan Kontak", path: "/pesan-kontak" },
     { icon: Star, label: "Testimoni", path: "/testimoni" },

@@ -1,8 +1,9 @@
 import axios from 'axios';
 
-// Gunakan path relative agar melewati Proxy Vite
+// Gunakan path relatif saat dev (localhost/127.0.0.1) agar lewat proxy Vite dan lolos CORS
+const isLocalDev = typeof window !== "undefined" && ["localhost", "127.0.0.1"].includes(window.location.hostname);
 const axiosClient = axios.create({
-  baseURL: "", // Kosongkan agar otomatis menggunakan origin localhost
+  baseURL: isLocalDev ? "" : (import.meta.env.VITE_API_BASE_URL || ""),
   withCredentials: true, // Wajib: Agar cookie token tersimpan
   headers: {
     'Content-Type': 'application/json',

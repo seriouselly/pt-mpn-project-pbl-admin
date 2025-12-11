@@ -12,6 +12,7 @@ import Profil from "./pages/ProfilPerusahaan";
 import Pesan from "./pages/Pesan";
 import Testimoni from "./pages/Testimoni";
 import AdminPage from "./pages/Admin"; // Import Admin Page
+import Partner from "./pages/Partner";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/profil-perusahaan" element={<PrivateRoute><Profil /></PrivateRoute>} />
           <Route path="/pesan-kontak" element={<PrivateRoute><Pesan /></PrivateRoute>} />
           <Route path="/testimoni" element={<PrivateRoute><Testimoni /></PrivateRoute>} />
+          <Route path="/partner" element={<PrivateRoute><Partner /></PrivateRoute>} />
           
           {/* Admin Route (Hanya bisa diakses jika Sidebar menampilkannya, 
               tapi backend juga akan memblokir request jika bukan superadmin) */}
