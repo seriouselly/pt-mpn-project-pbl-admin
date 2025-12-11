@@ -6,20 +6,30 @@ import {
   Building2, 
   MessageSquare, 
   Star, 
-  ChevronLeft 
+  ChevronLeft,
+  Shield // Icon untuk Admin
 } from "lucide-react";
 import "../../styles/components/Sidebar.css";
-
-const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-  { icon: GraduationCap, label: "Pelatihan", path: "/pelatihan" },
-  { icon: Briefcase, label: "Layanan", path: "/layanan" },
-  { icon: Building2, label: "Profil Perusahaan", path: "/profil-perusahaan" },
-  { icon: MessageSquare, label: "Pesan Kontak", path: "/pesan-kontak" },
-  { icon: Star, label: "Testimoni", path: "/testimoni" },
-];
+import { useAuth } from "../../contexts/AuthContext"; // Import Auth untuk cek role
 
 const Sidebar = ({ collapsed, onToggle }) => {
+  const { user } = useAuth(); // Ambil data user
+
+  // Menu item dasar
+  const menuItems = [
+    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+    { icon: GraduationCap, label: "Pelatihan", path: "/pelatihan" },
+    { icon: Briefcase, label: "Layanan", path: "/layanan" },
+    { icon: Building2, label: "Profil Perusahaan", path: "/profil-perusahaan" },
+    { icon: MessageSquare, label: "Pesan Kontak", path: "/pesan-kontak" },
+    { icon: Star, label: "Testimoni", path: "/testimoni" },
+  ];
+
+  // Tambahkan menu Admin jika role SUPERADMIN
+  if (user?.role === "SUPERADMIN") {
+    menuItems.push({ icon: Shield, label: "Manajemen Admin", path: "/admin" });
+  }
+
   return (
     <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
       <div className="sidebar-header d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
@@ -48,7 +58,7 @@ const Sidebar = ({ collapsed, onToggle }) => {
                 `sidebar-item d-flex align-items-center px-3 py-2 mb-1 rounded ${collapsed ? "justify-content-center" : ""} ${isActive ? "active" : ""}`
               }
             >
-              <Icon className="me-2" />
+              <Icon className="me-2" size={20} />
               {!collapsed && <span>{item.label}</span>}
             </NavLink>
           );

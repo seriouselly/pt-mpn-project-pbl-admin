@@ -21,11 +21,11 @@ export default function Login() {
     setLoading(true);
     setErrorMsg("");
 
-    const ok = await login(email, password);
+    const result = await login(email, password);
 
-    if (!ok) {
+    if (!result.success) {
       setLoading(false);
-      setErrorMsg("Email atau password salah!");
+      setErrorMsg(result.message);
       return;
     }
 
@@ -35,9 +35,7 @@ export default function Login() {
   return (
     <div className="login-container">
       <div className="login-card">
-        
         <div className="login-logo">MPN</div>
-
         <h3 className="login-title">Admin Dashboard</h3>
         <p className="login-subtitle">PT MULTIARTHA PUNDIMAS NAWASENA</p>
 
@@ -72,12 +70,6 @@ export default function Login() {
             {loading ? "Memproses..." : "Login"}
           </button>
         </form>
-
-        <div className="login-demo">
-          <strong>Demo Login</strong> <br />
-          Email: admin@mpn.co.id <br />
-          Password: admin123
-        </div>
       </div>
     </div>
   );
