@@ -11,6 +11,8 @@ import { getLayanan } from "../api/layananApi";
 
 import ModalPelatihan from "../components/ModalPelatihan";
 import Pagination from "../components/Pagination";
+import "../styles/pages/Pelatihan.css";
+import { resolveUploadUrl } from "../utils/url";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://202.10.47.174:8000";
 
@@ -28,7 +30,7 @@ export default function Pelatihan() {
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState("add"); 
   const [form, setForm] = useState({
-    id: null, nama: "", deskripsi: "", kategori: "", foto: "", foto_file: null, status: "Active"
+    id: null, nama: "", deskripsi: "", kategori: "", foto: "", foto_file: null, status: "active"
   });
 
   // 1. Load Data
@@ -48,8 +50,8 @@ export default function Pelatihan() {
         deskripsi: item.deskripsi,
         kategori: item.bidangUsahaId, 
         kategori_nama: item.bidang_usaha?.nama_BUsaha || "-", 
-        foto: item.foto ? (item.foto.startsWith("http") ? item.foto : `${BASE_URL}/${item.foto}`) : "",
-        status: "Active"
+        foto: resolveUploadUrl(BASE_URL, item.foto),
+        status: item.status || "active"
       }));
       setData(mappedPelatihan);
 
@@ -89,10 +91,10 @@ export default function Pelatihan() {
         kategori: layananName, 
         foto: item.foto,
         foto_file: null,
-        status: item.status
+        status: item.status || "active"
       });
     } else {
-      setForm({ id: null, nama: "", deskripsi: "", kategori: "", foto: "", foto_file: null, status: "Active" });
+      setForm({ id: null, nama: "", deskripsi: "", kategori: "", foto: "", foto_file: null, status: "active" });
     }
     setShowModal(true);
   };
@@ -116,7 +118,8 @@ export default function Pelatihan() {
       nama: form.nama,
       deskripsi: safeDeskripsi,
       layanan_id: selectedLayanan.id_BUsaha, 
-      gambar_file: form.foto_file
+      gambar_file: form.foto_file,
+      status: form.status || "active"
     };
 
     try {
@@ -229,7 +232,7 @@ export default function Pelatihan() {
             { name: "kategori", label: "Kategori (Layanan)", type: "select", options: layananList.map(l => l.nama_BUsaha) }, 
             { name: "deskripsi", label: "Deskripsi", type: "textarea", rows: 4 },
             { name: "foto", label: "Foto", type: "foto" },
-            { name: "status", label: "Status", type: "select", options: ["Active", "Inactive"] },
+            { name: "status", label: "Status", type: "select", options: ["active", "inactive"] },
           ]}
           value={form}
           onChange={setForm}

@@ -6,6 +6,7 @@ import Pagination from "../components/Pagination";
 import { getLayanan, createLayanan, updateLayanan, deleteLayanan } from "../api/layananApi";
 import { ToastContainer, toast } from "react-toastify";
 import { Briefcase, ArrowUpDown, Plus } from "lucide-react";
+import { resolveUploadUrl } from "../utils/url";
 
 // Helper URL Gambar
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://202.10.47.174:8000";
@@ -19,7 +20,7 @@ export default function Layanan() {
   const [loading, setLoading] = useState(true);
 
   const [show, setShow] = useState(false);
-  const [form, setForm] = useState({ id: null, nama: "", deskripsi: "", gambar: "", gambar_file: null });
+  const [form, setForm] = useState({ id: null, nama: "", deskripsi: "", foto: "", foto_file: null });
 
   // 1. Load Data
   const load = useCallback(async () => {
@@ -33,8 +34,7 @@ export default function Layanan() {
         id: item.id_BUsaha,
         nama: item.nama_BUsaha,
         deskripsi: item.deskripsi,
-        // Gambar Backend
-        gambar: item.poto ? (item.poto.startsWith("http") ? item.poto : `${BASE_URL}/${item.poto}`) : null
+        foto: resolveUploadUrl(BASE_URL, item.poto)
       }));
       setData(mapped);
     } catch (e) {
@@ -87,7 +87,7 @@ export default function Layanan() {
     let safeDeskripsi = form.deskripsi || "";
     if (safeDeskripsi.trim().length < 10) safeDeskripsi += " (Deskripsi layanan)";
 
-    const payload = { ...form, deskripsi: safeDeskripsi };
+    const payload = { nama: form.nama, deskripsi: safeDeskripsi, gambar_file: form.foto_file };
 
     try {
       if (form.id) {
@@ -128,7 +128,7 @@ export default function Layanan() {
             <p className="text-muted mb-0">Kelola Bidang Usaha Utama</p>
           </div>
           <button className="btn btn-primary d-flex align-items-center gap-2" onClick={() => { 
-            setForm({ id: null, nama: "", deskripsi: "", gambar: "", gambar_file: null }); 
+            setForm({ id: null, nama: "", deskripsi: "", foto: "", foto_file: null }); 
             setShow(true); 
           }}>
             <Plus size={18} /> Tambah Layanan
@@ -155,7 +155,7 @@ export default function Layanan() {
                 key={it.id} 
                 variant="layanan" 
                 item={it} 
-                onEdit={() => { setForm(it); setShow(true); }} 
+                onEdit={() => { setForm({ ...it, foto_file: null }); setShow(true); }} 
                 onDelete={() => handleDelete(it.id)} 
               />
             ))}
@@ -171,7 +171,7 @@ export default function Layanan() {
           fields={[
             { name: "nama", label: "Nama Bidang Usaha", type: "text" },
             { name: "deskripsi", label: "Deskripsi", type: "textarea" },
-            { name: "gambar", label: "Foto", type: "foto" }
+            { name: "foto", label: "Foto", type: "foto" }
           ]}
           value={form}
           onChange={setForm}

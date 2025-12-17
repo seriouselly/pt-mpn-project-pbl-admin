@@ -39,7 +39,7 @@
 }
 
 .table-custom th,
-.table-customtd {
+.table-custom td {
   padding: 1rem 1.5rem;
   text-align: left;
 }

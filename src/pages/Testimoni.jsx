@@ -5,6 +5,7 @@ import ModalItem from "../components/ModalItem";
 import Pagination from "../components/Pagination";
 import { getTestimoni, createTestimoni, updateTestimoni, deleteTestimoni } from "../api/testimoniApi";
 import { ToastContainer, toast } from "react-toastify";
+import { resolveUploadUrl } from "../utils/url";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://202.10.47.174:8000";
 
@@ -28,7 +29,7 @@ export default function Testimoni() {
       const mappedData = rawData.map(item => ({
         ...item,
         testimoni: item.pesan_testi, 
-        foto: item.foto ? (item.foto.startsWith("http") ? item.foto : `${BASE_URL}/${item.foto}`) : null 
+        foto: resolveUploadUrl(BASE_URL, item.foto),
       }));
       setData(mappedData);
     } catch (e) {
@@ -54,6 +55,8 @@ export default function Testimoni() {
 
   const submit = async () => {
     if (!form.nama || !form.testimoni) { toast.warn("Nama & testimoni wajib diisi"); return; }
+    if (form.testimoni.length < 10) { toast.warn("Testimoni minimal 10 karakter"); return; }
+    if (!form.id && !form.foto_file) { toast.warn("Foto wajib diunggah"); return; }
     try {
       if (form.id) {
         await updateTestimoni(form.id, form);

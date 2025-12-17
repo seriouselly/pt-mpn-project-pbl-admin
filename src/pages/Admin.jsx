@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "../components/layout/DashboardLayout";
-import { getUsers, createUser, updateUser, deleteUser } from "../api/userApi";
+import { getUsers, createUser, updateUser } from "../api/userApi";
 import ModalItem from "../components/ModalItem";
 import { ToastContainer, toast } from "react-toastify";
-import { Shield, UserPlus } from "lucide-react";
+import { UserPlus } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function AdminPage() {
+  const { user: authUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -15,15 +17,16 @@ export default function AdminPage() {
     name: "",
     email: "",
     password: "", // Password wajib saat create
-    telp: ""
+    telp: "",
+    currentPassword: ""
   });
 
   const loadUsers = async () => {
     setLoading(true);
     try {
       const res = await getUsers();
-      // Backend response: { data: [...] } or [...]
-      setUsers(res.data || res || []);
+      const list = res?.data || res || [];
+      setUsers(Array.isArray(list) ? list : []);
     } catch (error) {
       console.error(error);
       toast.error("Gagal memuat daftar admin (Mungkin anda bukan Superadmin)");
@@ -33,17 +36,30 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    loadUsers();
-  }, []);
+    if (authUser?.role === "SUPERADMIN") {
+      loadUsers();
+    } else {
+      setLoading(false);
+    }
+  }, [authUser]);
 
   const handleSubmit = async () => {
     const isEdit = !!form.id;
-    if (!form.name || !form.email || !form.telp) {
+    const telp = (form.telp || "").trim();
+    if (!form.name || !form.email || !telp) {
       toast.warn("Nama, Email, dan Telepon wajib diisi");
+      return;
+    }
+    if (!/^[0-9]{11,15}$/.test(telp)) {
+      toast.warn("Nomor telepon wajib 11-15 digit angka");
       return;
     }
     if (!isEdit && !form.password) {
       toast.warn("Password wajib diisi untuk admin baru");
+      return;
+    }
+    if (isEdit && form.password && !form.currentPassword) {
+      toast.warn("Masukkan password saat ini untuk mengganti password");
       return;
     }
 
@@ -57,44 +73,65 @@ export default function AdminPage() {
 
     try {
       if (isEdit) {
-        await updateUser(form.id, form);
+        const payload = { name: form.name, email: form.email, telp };
+        if (form.password) {
+          payload.password = form.password;
+          payload.currentPassword = form.currentPassword;
+        }
+        await updateUser(form.id, payload);
         toast.success("Admin berhasil diperbarui");
       } else {
-        await createUser(form);
+        await createUser({
+          name: form.name,
+          email: form.email,
+          telp,
+          password: form.password,
+        });
         toast.success("Admin baru berhasil ditambahkan");
       }
       setShowModal(false);
-      setForm({ id: null, name: "", email: "", password: "", telp: "" });
+      setForm({ id: null, name: "", email: "", password: "", telp: "", currentPassword: "" });
       loadUsers();
     } catch (error) {
       console.error(error);
-      const msg = error.response?.data?.errors || error.response?.data?.message || "Gagal menambah/mengubah admin";
+      const raw = error.response?.data?.errors || error.response?.data?.message || error.message;
+      const msg = /unique/i.test(raw || "") ? "Email sudah digunakan user lain" : (raw || "Gagal menambah/mengubah admin");
       toast.error(msg);
     }
   };
 
   const handleEdit = (user) => {
+    const isSelf = authUser && user.id === authUser.id;
+    if (!isSelf) {
+      toast.info("Backend belum menyediakan edit admin lain. Hanya bisa edit akun sendiri.");
+      return;
+    }
     setForm({
       id: user.id,
       name: user.name,
       email: user.email,
       telp: user.telp,
-      password: ""
+      password: "",
+      currentPassword: ""
     });
     setShowModal(true);
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Hapus admin ini?")) return;
-    try {
-      await deleteUser(id);
-      toast.success("Admin dihapus");
-      loadUsers();
-    } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.errors || "Gagal menghapus admin");
-    }
+  const handleDelete = async (user) => {
+    toast.info("Backend belum menyediakan hapus admin lain.");
   };
+
+  if (authUser?.role !== "SUPERADMIN") {
+    return (
+      <DashboardLayout>
+        <div className="page-container">
+          <div className="alert alert-danger mt-4">
+            Halaman ini hanya dapat diakses oleh SUPERADMIN.
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -104,9 +141,18 @@ export default function AdminPage() {
             <h2 className="fw-bold">Manajemen Admin</h2>
             <p className="text-muted">Kelola akun administrator (Khusus Superadmin)</p>
           </div>
-          <button className="btn btn-primary d-flex align-items-center gap-2" onClick={() => { setForm({ id: null, name: "", email: "", password: "", telp: "" }); setShowModal(true); }}>
+          <button
+            className="btn btn-primary d-flex align-items-center gap-2"
+            onClick={() => { setForm({ id: null, name: "", email: "", password: "", telp: "", currentPassword: "" }); setShowModal(true); }}
+            disabled={authUser?.role !== "SUPERADMIN"}
+            title={authUser?.role !== "SUPERADMIN" ? "Hanya SUPERADMIN dapat menambah admin" : ""}
+          >
             <UserPlus size={18} /> Tambah Admin
           </button>
+        </div>
+
+        <div className="alert alert-info">
+          Hanya SUPERADMIN di halaman ini. Backend belum menyediakan edit/hapus admin lain, jadi hanya bisa tambah akun baru atau edit akun sendiri. Perubahan password memerlukan Password Saat Ini; telp wajib 11-15 digit.
         </div>
 
         <div className="card border-0 shadow-sm rounded-3 overflow-hidden">
@@ -139,8 +185,22 @@ export default function AdminPage() {
                       <td className="py-3 text-muted">{u.telp}</td>
                       <td className="py-3 text-center">
                         <div className="d-flex justify-content-center gap-2">
-                          <button className="btn btn-sm btn-outline-warning" onClick={() => handleEdit(u)}>Edit</button>
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => handleDelete(u.id)}>Hapus</button>
+                          <button
+                            className="btn btn-sm btn-outline-warning"
+                            onClick={() => handleEdit(u)}
+                            disabled={authUser && u.id !== authUser.id}
+                            title="Edit admin lain tidak tersedia di backend"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() => handleDelete(u)}
+                            disabled={authUser && u.id !== authUser.id}
+                            title="Hapus admin lain tidak tersedia di backend"
+                          >
+                            Hapus
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -159,6 +219,7 @@ export default function AdminPage() {
             { name: "name", label: "Nama Lengkap", type: "text" },
             { name: "email", label: "Email", type: "text" },
             { name: "password", label: form.id ? "Password Baru" : "Password Default", type: "password", placeholder: form.id ? "Kosongkan jika tidak diubah" : "" },
+            ...(form.id ? [{ name: "currentPassword", label: "Password Saat Ini (untuk ganti password)", type: "password" }] : []),
             { name: "telp", label: "No. Telepon", type: "text" }
           ]}
           key={form.id || "new"} // paksa reset input saat ganti mode add/edit

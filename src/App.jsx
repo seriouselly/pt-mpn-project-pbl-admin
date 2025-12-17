@@ -1,7 +1,8 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import PrivateRoute from "./routes/PrivateRoute";
+import { useAuth } from "./contexts/AuthContext";
 
 // Pages
 import Login from "./pages/Login";
@@ -13,6 +14,16 @@ import Pesan from "./pages/Pesan";
 import Testimoni from "./pages/Testimoni";
 import AdminPage from "./pages/Admin"; // Import Admin Page
 import Partner from "./pages/Partner";
+import GalleryAdmin from "./pages/GalleryAdmin";
+import DetailJenis from "./pages/DetailJenis";
+
+const SuperAdminRoute = ({ children }) => {
+  const { user } = useAuth();
+  if (user?.role !== "SUPERADMIN") {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return children;
+};
 
 function App() {
   return (
@@ -30,10 +41,11 @@ function App() {
           <Route path="/pesan-kontak" element={<PrivateRoute><Pesan /></PrivateRoute>} />
           <Route path="/testimoni" element={<PrivateRoute><Testimoni /></PrivateRoute>} />
           <Route path="/partner" element={<PrivateRoute><Partner /></PrivateRoute>} />
+          <Route path="/gallery" element={<PrivateRoute><GalleryAdmin /></PrivateRoute>} />
+          <Route path="/detail-jenis" element={<PrivateRoute><DetailJenis /></PrivateRoute>} />
           
-          {/* Admin Route (Hanya bisa diakses jika Sidebar menampilkannya, 
-              tapi backend juga akan memblokir request jika bukan superadmin) */}
-          <Route path="/admin" element={<PrivateRoute><AdminPage /></PrivateRoute>} />
+          {/* Admin Route khusus SUPERADMIN */}
+          <Route path="/admin" element={<PrivateRoute><SuperAdminRoute><AdminPage /></SuperAdminRoute></PrivateRoute>} />
 
           {/* Default redirect */}
           <Route path="*" element={<Login />} />

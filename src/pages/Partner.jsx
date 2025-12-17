@@ -6,6 +6,7 @@ import Pagination from "../components/Pagination";
 import { getPartners, createPartner, updatePartner, deletePartner } from "../api/partnerApi";
 import { ToastContainer, toast } from "react-toastify";
 import { Handshake, Plus } from "lucide-react";
+import { resolveUploadUrl } from "../utils/url";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://202.10.47.174:8000";
 
@@ -27,7 +28,7 @@ export default function Partner() {
         id: item.id,
         nama: item.nama_partner,
         deskripsi: item.deskripsi,
-        foto: item.logo ? (item.logo.startsWith("http") ? item.logo : `${BASE_URL}/${item.logo}`) : null,
+        foto: resolveUploadUrl(BASE_URL, item.logo),
       }));
       setData(mapped);
     } catch (e) {
@@ -50,6 +51,7 @@ export default function Partner() {
 
   const submit = async () => {
     if (!form.nama) { toast.warn("Nama partner wajib diisi"); return; }
+    if (!form.deskripsi || form.deskripsi.length < 10) { toast.warn("Deskripsi minimal 10 karakter"); return; }
     if (!form.id && !form.foto_file) { toast.warn("Logo wajib diunggah"); return; }
     try {
       if (form.id) {

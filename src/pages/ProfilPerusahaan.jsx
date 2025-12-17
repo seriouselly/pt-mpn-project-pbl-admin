@@ -7,6 +7,7 @@ import "../styles/pages/Profil.css";
 
 const ProfilPerusahaan = () => {
   const [loading, setLoading] = useState(true);
+  const [profileSource, setProfileSource] = useState("");
   
   // State Input Sementara untuk Array
   const [newMisi, setNewMisi] = useState("");
@@ -50,9 +51,9 @@ const ProfilPerusahaan = () => {
     setLoading(true);
     try {
       const result = await getProfil();
-      if (result) {
-        // Pastikan struktur data sesuai, jika backend mengirim wrapper 'data', sesuaikan di sini
-        setFormData(result.data || result); 
+      if (result?.data) {
+        setFormData(result.data); 
+        setProfileSource(result.source || "");
       }
     } catch (error) {
       console.error("Gagal memuat profil:", error);
@@ -128,6 +129,11 @@ const ProfilPerusahaan = () => {
         <div className="mb-4">
           <h2 className="fw-bold text-dark">Profil Perusahaan</h2>
           <p className="text-muted">Kelola data utama perusahaan yang akan ditampilkan di website.</p>
+          {profileSource && !["api", "cache"].includes(profileSource) && (
+            <div className="alert alert-warning mt-3">
+              Perubahan company profile tidak akan otomatis tampil di website public sampai public mengambil sumber terbaru (saat ini memakai {profileSource === "fallback-json" ? "profil.json" : "data lokal"}).
+            </div>
+          )}
         </div>
 
         {/* --- SECTION 1: IDENTITAS & TENTANG --- */}

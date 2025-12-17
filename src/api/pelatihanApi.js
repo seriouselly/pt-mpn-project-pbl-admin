@@ -10,6 +10,8 @@ export async function createPelatihan(data) {
   const formData = new FormData();
   formData.append("nama_jenis", data.nama);
   formData.append("deskripsi", data.deskripsi);
+  formData.append("status", data.status || "active");
+  if (data.layanan_id) formData.append("bidangUsahaId", data.layanan_id);
   if (data.gambar_file) formData.append("foto", data.gambar_file);
 
   if (!data.layanan_id) throw new Error("Pilih layanan induk terlebih dahulu!");
@@ -24,6 +26,7 @@ export async function updatePelatihan(id, data) {
   const formData = new FormData();
   formData.append("nama_jenis", data.nama);
   formData.append("deskripsi", data.deskripsi);
+  formData.append("status", data.status || "active");
   if (data.gambar_file) formData.append("foto", data.gambar_file);
   
   // Endpoint update mungkin tidak mengubah induk, tapi jika backend butuh:

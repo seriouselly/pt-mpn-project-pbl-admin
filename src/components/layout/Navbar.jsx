@@ -1,5 +1,5 @@
 import "../../styles/components/Navbar.css";
-
+import { LogOut } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function Navbar() {
@@ -40,7 +40,7 @@ export default function Navbar() {
             className="btn btn-outline-danger btn-sm"
             onClick={logout}
           >
-            <i className="bi bi-box-arrow-right me-1"></i>
+            <LogOut size={16} className="me-1" />
             Logout
           </button>
         </div>

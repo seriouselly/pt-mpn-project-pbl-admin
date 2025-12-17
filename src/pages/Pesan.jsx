@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "../components/layout/DashboardLayout";
 import { Eye, Trash2, X, Search, Mail, Tag } from "lucide-react";
-import axiosClient from "../api/axiosClient"; // Import axiosClient
 import { toast, ToastContainer } from "react-toastify"; // Tambahkan notifikasi
 import "../styles/pages/Pesan.css";
+import { deletePesan, getPesan, updatePesan } from "../api/pesanApi";
 
 const Pesan = () => {
   const [messages, setMessages] = useState([]);
@@ -18,10 +18,12 @@ const Pesan = () => {
   const loadMessages = async () => {
     setLoading(true);
     try {
-      const response = await axiosClient.get("/api/pesan");
-      // Backend mengembalikan array langsung atau object? Cek controller.
-      // Controller: return res.json(Psn); -> Array
-      setMessages(response.data || []);
+      const data = await getPesan();
+      const normalized = (data || []).map((msg) => ({
+        ...msg,
+        status: msg.status || "pending",
+      }));
+      setMessages(normalized);
     } catch (error) {
       console.error("Gagal mengambil pesan:", error);
       toast.error("Gagal memuat pesan.");
@@ -63,11 +65,26 @@ const Pesan = () => {
     setTimeout(() => setSelectedMessage(null), 200); 
   };
 
-  // 5. Handler Hapus Pesan (API)
+  // 5. Handler Update & Hapus Pesan (API)
+  const handleStatusUpdate = async (id, status) => {
+    try {
+      await updatePesan(id, status);
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id_pesan === id ? { ...msg, status } : msg
+        )
+      );
+      toast.success("Status pesan diperbarui");
+    } catch (error) {
+      console.error("Gagal memperbarui status pesan:", error);
+      toast.error("Gagal memperbarui status.");
+    }
+  };
+
   const handleDelete = async (id) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus pesan ini?")) {
       try {
-        await axiosClient.delete(`/api/pesan/${id}`);
+        await deletePesan(id);
         toast.success("Pesan berhasil dihapus");
         loadMessages(); // Reload data
       } catch (error) {
@@ -108,18 +125,19 @@ const Pesan = () => {
               <thead>
                 <tr>
                   <th style={{width: '5%'}}>#</th>
-                  <th style={{width: '25%'}}>Pengirim</th>
-                  <th style={{width: '20%'}}>Layanan</th>
-                  <th style={{width: '35%'}}>Pesan</th>
-                  <th style={{width: '15%'}}>Waktu</th>
-                  <th style={{width: '10%'}}>Aksi</th>
+                  <th style={{width: '22%'}}>Pengirim</th>
+                  <th style={{width: '18%'}}>Layanan</th>
+                  <th style={{width: '25%'}}>Pesan</th>
+                  <th style={{width: '12%'}}>Waktu</th>
+                  <th style={{width: '10%'}}>Status</th>
+                  <th style={{width: '8%'}}>Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan="6" className="text-center p-5">Memuat pesan...</td></tr>
+                  <tr><td colSpan="7" className="text-center p-5">Memuat pesan...</td></tr>
                 ) : filteredMessages.length === 0 ? (
-                  <tr><td colSpan="6" className="text-center p-5">Tidak ada pesan ditemukan.</td></tr>
+                  <tr><td colSpan="7" className="text-center p-5">Tidak ada pesan ditemukan.</td></tr>
                 ) : (
                   filteredMessages.map((msg, index) => (
                     <tr key={msg.id_pesan || index}>
@@ -139,6 +157,17 @@ const Pesan = () => {
                         <div className="pesan-preview">{msg.pesan_isi}</div>
                       </td>
                       <td className="text-muted fs-7">{formatDate(msg.createdAt)}</td>
+                      <td>
+                        <select
+                          className="form-select form-select-sm"
+                          value={msg.status || "pending"}
+                          onChange={(e) => handleStatusUpdate(msg.id_pesan, e.target.value)}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="dibaca">Dibaca</option>
+                          <option value="selesai">Selesai</option>
+                        </select>
+                      </td>
                       <td>
                         <div className="d-flex gap-2">
                           <button className="btn btn-sm btn-outline-primary border-0 p-1" onClick={() => handleView(msg)} title="Lihat Detail">
