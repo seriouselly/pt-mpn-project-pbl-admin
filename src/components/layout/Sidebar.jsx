@@ -26,7 +26,7 @@ const Sidebar = ({ collapsed, onToggle }) => {
     { icon: Briefcase, label: "Layanan", path: "/layanan" },
     { icon: Handshake, label: "Partner", path: "/partner" },
     { icon: Images, label: "Galeri", path: "/gallery" },
-    { icon: ListChecks, label: "Detail Layanan", path: "/detail-jenis" },
+    // { icon: ListChecks, label: "Detail Layanan", path: "/detail-jenis" },
     { icon: Building2, label: "Profil Perusahaan", path: "/profil-perusahaan" },
     { icon: MessageSquare, label: "Pesan Kontak", path: "/pesan-kontak" },
     { icon: Star, label: "Testimoni", path: "/testimoni" },

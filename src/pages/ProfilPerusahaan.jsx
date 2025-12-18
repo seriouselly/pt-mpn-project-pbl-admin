@@ -38,7 +38,7 @@ const ProfilPerusahaan = () => {
       mapsEmbed: ""
     },
     sosial_media: {
-      linkedin: "",
+      // linkedin: "",
       facebook: "",
       instagram: "",
       tiktok: "",
@@ -246,14 +246,26 @@ const ProfilPerusahaan = () => {
             <div className="row g-3">
               <div className="col-md-6">
                 <div className="input-group">
-                  <span className="input-group-text bg-light">LinkedIn</span>
-                  <input type="text" className="form-control form-control-custom rounded-end" value={formData.sosial_media?.linkedin || ""} onChange={(e) => handleNestedChange('sosial_media', 'linkedin', e.target.value)} />
+                  <span className="input-group-text bg-light">Instagram</span>
+                  <input type="text" className="form-control form-control-custom rounded-end" value={formData.sosial_media?.instagram || ""} onChange={(e) => handleNestedChange('sosial_media', 'instagram', e.target.value)} />
                 </div>
               </div>
               <div className="col-md-6">
                 <div className="input-group">
-                  <span className="input-group-text bg-light">Instagram</span>
-                  <input type="text" className="form-control form-control-custom rounded-end" value={formData.sosial_media?.instagram || ""} onChange={(e) => handleNestedChange('sosial_media', 'instagram', e.target.value)} />
+                  <span className="input-group-text bg-light">Youtube</span>
+                  <input type="text" className="form-control form-control-custom rounded-end" value={formData.sosial_media?.youtube || ""} onChange={(e) => handleNestedChange('sosial_media', 'youtube', e.target.value)} />
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="input-group">
+                  <span className="input-group-text bg-light">Facebook</span>
+                  <input type="text" className="form-control form-control-custom rounded-end" value={formData.sosial_media?.facebook || ""} onChange={(e) => handleNestedChange('sosial_media', 'facebook', e.target.value)} />
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="input-group">
+                  <span className="input-group-text bg-light">LinkedIn</span>
+                  <input type="text" className="form-control form-control-custom rounded-end" value={formData.sosial_media?.linkedin || ""} onChange={(e) => handleNestedChange('sosial_media', 'linkedin', e.target.value)} />
                 </div>
               </div>
             </div>

@@ -15,7 +15,7 @@ import Testimoni from "./pages/Testimoni";
 import AdminPage from "./pages/Admin"; // Import Admin Page
 import Partner from "./pages/Partner";
 import GalleryAdmin from "./pages/GalleryAdmin";
-import DetailJenis from "./pages/DetailJenis";
+// import DetailJenis from "./pages/DetailJenis";
 
 const SuperAdminRoute = ({ children }) => {
   const { user } = useAuth();
@@ -42,7 +42,7 @@ function App() {
           <Route path="/testimoni" element={<PrivateRoute><Testimoni /></PrivateRoute>} />
           <Route path="/partner" element={<PrivateRoute><Partner /></PrivateRoute>} />
           <Route path="/gallery" element={<PrivateRoute><GalleryAdmin /></PrivateRoute>} />
-          <Route path="/detail-jenis" element={<PrivateRoute><DetailJenis /></PrivateRoute>} />
+          {/* <Route path="/detail-jenis" element={<PrivateRoute><DetailJenis /></PrivateRoute>} /> */}
           
           {/* Admin Route khusus SUPERADMIN */}
           <Route path="/admin" element={<PrivateRoute><SuperAdminRoute><AdminPage /></SuperAdminRoute></PrivateRoute>} />

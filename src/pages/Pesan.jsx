@@ -125,11 +125,11 @@ const Pesan = () => {
               <thead>
                 <tr>
                   <th style={{width: '5%'}}>#</th>
-                  <th style={{width: '22%'}}>Pengirim</th>
-                  <th style={{width: '18%'}}>Layanan</th>
-                  <th style={{width: '25%'}}>Pesan</th>
-                  <th style={{width: '12%'}}>Waktu</th>
-                  <th style={{width: '10%'}}>Status</th>
+                  <th style={{width: '15%'}}>Pengirim</th>
+                  <th style={{width: '15%'}}>Layanan</th>
+                  <th style={{width: '20%'}}>Pesan</th>
+                  <th style={{width: '15%'}}>Waktu</th>
+                  <th style={{width: '18%'}}>Status</th>
                   <th style={{width: '8%'}}>Aksi</th>
                 </tr>
               </thead>
