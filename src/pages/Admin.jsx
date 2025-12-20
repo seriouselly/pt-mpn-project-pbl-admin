@@ -82,12 +82,16 @@ export default function AdminPage() {
     try {
       if (isEdit) {
         const payload = { name: form.name, email: form.email, telp };
+        const isSelf = authUser && form.id === authUser.id;
+
         if (form.password) {
           payload.password = form.password;
-          if (form.currentPassword)
+          // Hanya kirim currentPassword jika edit akun sendiri
+          if (isSelf && form.currentPassword) {
             payload.currentPassword = form.currentPassword;
+          }
         }
-        const isSelf = authUser && form.id === authUser.id;
+
         if (isSelf) {
           await updateUser(form.id, payload);
         } else {
