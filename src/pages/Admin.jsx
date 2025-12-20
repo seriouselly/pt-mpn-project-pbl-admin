@@ -206,9 +206,10 @@ export default function AdminPage() {
         </div>
 
         <div className="alert alert-info">
-          Sebagai SUPERADMIN, Anda dapat menambah, mengedit, dan menghapus admin
-          lain. Perubahan password pada akun sendiri memerlukan Password Saat
-          Ini. No. telepon wajib 11-15 digit.
+          Sebagai SUPERADMIN, Anda dapat menambah dan menghapus admin lain.
+          Perubahan password pada akun sendiri memerlukan Password Saat Ini.
+          <br />
+          No. Telepon yang dimasukkan wajib 11-15 digit.
         </div>
 
         <div className="card border-0 shadow-sm rounded-3 overflow-hidden">
@@ -257,24 +258,29 @@ export default function AdminPage() {
                       <td className="py-3 text-muted">{u.telp}</td>
                       <td className="py-3 text-center">
                         <div className="d-flex justify-content-center gap-2">
-                          <button
-                            className="btn btn-sm btn-outline-warning"
-                            onClick={() => handleEdit(u)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="btn btn-sm btn-outline-danger"
-                            onClick={() => handleDelete(u)}
-                            disabled={authUser && u.id === authUser.id}
-                            title={
-                              authUser && u.id === authUser.id
-                                ? "Tidak dapat menghapus akun sendiri"
-                                : ""
-                            }
-                          >
-                            Hapus
-                          </button>
+                          {/* SUPERADMIN: Hanya tombol Edit */}
+                          {u.role === "SUPERADMIN" ? (
+                            <button
+                              className="btn btn-sm btn-outline-primary px-3"
+                              onClick={() => handleEdit(u)}
+                            >
+                              Edit
+                            </button>
+                          ) : (
+                            // ADMIN: Hanya tombol Hapus
+                            <button
+                              className="btn btn-sm btn-outline-danger"
+                              onClick={() => handleDelete(u)}
+                              disabled={authUser && u.id === authUser.id}
+                              title={
+                                authUser && u.id === authUser.id
+                                  ? "Tidak dapat menghapus akun sendiri"
+                                  : ""
+                              }
+                            >
+                              Hapus
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

@@ -1,50 +1,172 @@
 import "../../styles/components/Navbar.css";
-import { LogOut } from "lucide-react";
+import { LogOut, Menu, User, Mail, Phone, Lock } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
+import { useState } from "react";
+import ModalItem from "../ModalItem";
+import { updateUser } from "../../api/userApi";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editForm, setEditForm] = useState({
+    name: "",
+    email: "",
+    telp: "",
+    password: "",
+    currentPassword: "",
+  });
+
+  const handleEditProfile = () => {
+    setEditForm({
+      name: user?.name || "",
+      email: user?.email || "",
+      telp: user?.telp || "",
+      password: "",
+      currentPassword: "",
+    });
+    setShowEditModal(true);
+    setShowDropdown(false);
+  };
+
+  const handleSubmitEdit = async () => {
+    if (!editForm.name || !editForm.email || !editForm.telp) {
+      toast.warn("Nama, Email, dan Telepon wajib diisi");
+      return;
+    }
+    if (!/^[0-9]{11,15}$/.test(editForm.telp.trim())) {
+      toast.warn("Nomor telepon wajib 11-15 digit angka");
+      return;
+    }
+    if (editForm.password && !editForm.currentPassword) {
+      toast.warn("Masukkan password saat ini untuk mengganti password");
+      return;
+    }
+
+    try {
+      const payload = {
+        name: editForm.name,
+        email: editForm.email,
+        telp: editForm.telp,
+      };
+      if (editForm.password) {
+        payload.password = editForm.password;
+        payload.currentPassword = editForm.currentPassword;
+      }
+
+      await updateUser(user?.id, payload);
+      toast.success("Profil berhasil diperbarui. Silakan login ulang.");
+      setTimeout(() => {
+        logout();
+      }, 2000);
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Gagal memperbarui profil");
+    }
+  };
 
   return (
-    <nav className="navbar navbar-light bg-white border-bottom px-4 shadow-sm">
-      <div className="container-fluid d-flex justify-content-between align-items-center">
+    <>
+      <nav className="navbar navbar-light bg-white border-bottom px-4 shadow-sm">
+        <div className="container-fluid d-flex justify-content-between align-items-center">
+          {/* Judul */}
+          <span className="navbar-brand fw-semibold fs-4">Admin Dashboard</span>
 
-        {/* Judul */}
-        <span className="navbar-brand fw-semibold fs-4">
-          Admin Dashboard
-        </span>
+          {/* Kanan: Avatar + Nama + Logout */}
+          <div className="d-flex align-items-center gap-3">
+            {/* Avatar */}
+            {user?.avatar ? (
+              <img
+                src={user.avatar}
+                className="rounded-circle"
+                width="36"
+                height="36"
+                alt="Avatar"
+              />
+            ) : (
+              <div className="avatar-fallback">
+                {user?.name?.charAt(0)?.toUpperCase() || "A"}
+              </div>
+            )}
 
-        {/* Kanan: Avatar + Nama + Logout */}
-        <div className="d-flex align-items-center gap-3">
+            {/* Nama admin */}
+            <span className="fw-medium">{user?.name || "Admin"}</span>
 
-          {/* Avatar */}
-          {user?.avatar ? (
-            <img
-              src={user.avatar}
-              className="rounded-circle"
-              width="36"
-              height="36"
-              alt="Avatar"
-            />
-          ) : (
-            <div className="avatar-fallback">
-              {user?.name?.charAt(0)?.toUpperCase() || "A"}
-            </div>
-          )}
-
-          {/* Nama admin */}
-          <span className="fw-medium">{user?.name || "Admin"}</span>
-
-          {/* Tombol Logout */}
-          <button
-            className="btn btn-outline-danger btn-sm"
-            onClick={logout}
-          >
-            <LogOut size={16} className="me-1" />
-            Logout
-          </button>
+            {/* Tombol Logout atau Dropdown Menu */}
+            {user?.role === "SUPERADMIN" ? (
+              // SUPERADMIN: Tombol logout biasa
+              <button
+                className="btn btn-outline-danger btn-sm"
+                onClick={logout}
+              >
+                <LogOut size={16} className="me-1" />
+                Logout
+              </button>
+            ) : (
+              // ADMIN: Dropdown menu dengan ikon garis tiga
+              <div className="dropdown position-relative">
+                <button
+                  className="btn btn-outline-secondary btn-sm"
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                >
+                  <Menu size={18} />
+                </button>
+                {showDropdown && (
+                  <div
+                    className="dropdown-menu dropdown-menu-end show position-absolute"
+                    style={{ right: 0, minWidth: "200px" }}
+                  >
+                    <button
+                      className="dropdown-item d-flex align-items-center gap-2"
+                      onClick={handleEditProfile}
+                    >
+                      <User size={16} />
+                      Edit Profil
+                    </button>
+                    <div className="dropdown-divider"></div>
+                    <button
+                      className="dropdown-item d-flex align-items-center gap-2 text-danger"
+                      onClick={logout}
+                    >
+                      <LogOut size={16} />
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+      {/* Modal Edit Profil */}
+      <ModalItem
+        show={showEditModal}
+        title="Edit Profil"
+        fields={[
+          { name: "name", label: "Nama Lengkap", type: "text" },
+          { name: "email", label: "Email", type: "text" },
+          { name: "telp", label: "No. Telepon", type: "text" },
+          {
+            name: "password",
+            label: "Password Baru",
+            type: "password",
+            placeholder: "Kosongkan jika tidak diubah",
+          },
+          {
+            name: "currentPassword",
+            label: "Password Saat Ini",
+            type: "password",
+            placeholder: "Wajib jika mengganti password",
+          },
+        ]}
+        value={editForm}
+        onChange={setEditForm}
+        onSubmit={handleSubmitEdit}
+        onClose={() => setShowEditModal(false)}
+      />
+      <ToastContainer position="top-right" />
+    </>
   );
 }
