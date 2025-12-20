@@ -51,11 +51,8 @@ export async function updateUserById(id, data) {
     const res = await axiosClient.put(`${USER_BASE}/${id}`, payload);
     return res.data;
   } catch (err) {
-    if (
-      err.response?.data?.errors?.includes('"id" is not allowed') ||
-      err.response?.status === 404
-    ) {
-      // Fallback to self-update path if API doesn't support update-by-id
+    // If 404, backend doesn't support update by ID - just use self-update endpoint
+    if (err.response?.status === 404) {
       const res = await axiosClient.put(USER_UPDATE_PATH, payload);
       return res.data;
     }
