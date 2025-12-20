@@ -28,7 +28,11 @@ const MOCK_PROFIL = {
     mapsEmbed: "",
   },
   sosial_media: {
-    linkedin: "", facebook: "", instagram: "", tiktok: "", youtube: "",
+    linkedin: "",
+    facebook: "",
+    instagram: "",
+    tiktok: "",
+    youtube: "",
   },
 };
 
