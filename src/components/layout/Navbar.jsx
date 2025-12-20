@@ -19,10 +19,19 @@ export default function Navbar() {
   });
 
   const handleEditProfile = () => {
+    // Set form dengan data user terbaru
+    const currentTelp = user?.telp || user?.phone || "";
+    console.log(
+      "Opening edit profile. User telp:",
+      currentTelp,
+      "Full user:",
+      user
+    );
+
     setEditForm({
       name: user?.name || "",
       email: user?.email || "",
-      telp: user?.telp || "",
+      telp: currentTelp,
       password: "",
       currentPassword: "",
     });
@@ -44,25 +53,58 @@ export default function Navbar() {
       return;
     }
 
+    const passwordChanged = !!editForm.password;
+
     try {
       const payload = {
         name: editForm.name,
         email: editForm.email,
         telp: editForm.telp,
       };
-      if (editForm.password) {
+
+      if (passwordChanged) {
         payload.password = editForm.password;
         payload.currentPassword = editForm.currentPassword;
       }
 
       await updateUser(user?.id, payload);
-      toast.success("Profil berhasil diperbarui. Silakan login ulang.");
-      setTimeout(() => {
-        logout();
-      }, 2000);
+
+      // Update user di localStorage dengan data terbaru
+      // Ini penting agar data tidak hilang saat login ulang
+      const updatedUser = {
+        ...user,
+        name: editForm.name,
+        email: editForm.email,
+        telp: editForm.telp,
+      };
+      localStorage.setItem("mpn_admin_user", JSON.stringify(updatedUser));
+
+      // Tutup modal
+      setShowEditModal(false);
+
+      if (passwordChanged) {
+        // Jika password diubah, beri notifikasi dan logout setelah delay lebih lama
+        toast.success(
+          "Password berhasil diubah! Silakan login ulang dengan password baru.",
+          { autoClose: 3000 }
+        );
+        setTimeout(() => {
+          logout();
+        }, 3500);
+      } else {
+        // Jika hanya data biasa, cukup refresh halaman
+        toast.success("Profil berhasil diperbarui!", { autoClose: 2000 });
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      }
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || "Gagal memperbarui profil");
+      const errMsg =
+        error.response?.data?.message ||
+        error.response?.data?.errors ||
+        "Gagal memperbarui profil";
+      toast.error(errMsg);
     }
   };
 
@@ -142,6 +184,7 @@ export default function Navbar() {
       </nav>
       {/* Modal Edit Profil */}
       <ModalItem
+        key={showEditModal ? "edit-open" : "edit-closed"} // Force re-render saat modal dibuka
         show={showEditModal}
         title="Edit Profil"
         fields={[
