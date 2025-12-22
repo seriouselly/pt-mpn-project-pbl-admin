@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../components/layout/DashboardLayout";
-import { 
-  GraduationCap, 
-  Briefcase, 
-  MessageSquare, 
-  Star, 
-  TrendingUp 
+import {
+  GraduationCap,
+  Briefcase,
+  MessageSquare,
+  Star,
+  TrendingUp,
+  LayoutDashboard,
 } from "lucide-react";
 import { getDashboardStats } from "../api/dashboardApi";
 import "../styles/pages/Dashboard.css";
@@ -17,7 +18,7 @@ const Dashboard = () => {
     pelatihan: 0,
     layanan: 0,
     pesan: 0,
-    testimoni: 0
+    testimoni: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -39,7 +40,10 @@ const Dashboard = () => {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="d-flex justify-content-center align-items-center" style={{height: '80vh'}}>
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ height: "80vh" }}
+        >
           <div className="spinner-border text-primary" role="status"></div>
         </div>
       </DashboardLayout>
@@ -48,46 +52,48 @@ const Dashboard = () => {
 
   // Data Statistik untuk Card
   const statCards = [
-    { 
-      label: "Total Pelatihan", 
-      value: stats.pelatihan, 
-      icon: GraduationCap, 
+    {
+      label: "Total Pelatihan",
+      value: stats.pelatihan,
+      icon: GraduationCap,
       bgClass: "bg-blue-soft",
       subtext: "Data terdaftar",
-      path: "/pelatihan"
+      path: "/pelatihan",
     },
-    { 
-      label: "Total Layanan", 
-      value: stats.layanan, 
-      icon: Briefcase, 
+    {
+      label: "Total Layanan",
+      value: stats.layanan,
+      icon: Briefcase,
       bgClass: "bg-orange-soft",
       subtext: "Bidang usaha aktif",
-      path: "/layanan"
+      path: "/layanan",
     },
-    { 
-      label: "Pesan Kontak", 
-      value: stats.pesan, 
-      icon: MessageSquare, 
+    {
+      label: "Pesan Kontak",
+      value: stats.pesan,
+      icon: MessageSquare,
       bgClass: "bg-cyan-soft",
       subtext: "Pesan masuk",
-      path: "/pesan-kontak"
+      path: "/pesan-kontak",
     },
-    { 
-      label: "Testimoni", 
-      value: stats.testimoni, 
-      icon: Star, 
+    {
+      label: "Testimoni",
+      value: stats.testimoni,
+      icon: Star,
       bgClass: "bg-yellow-soft",
       subtext: "Ulasan pengguna",
-      path: "/testimoni"
+      path: "/testimoni",
     },
   ];
 
   return (
     <DashboardLayout>
       <div className="container-fluid p-0 dashboard-container">
-        
         <div className="dashboard-header mb-4">
-          <h2>Dashboard</h2>
+          <h2 className="fw-bold d-flex align-items-center gap-2 mb-1">
+            <LayoutDashboard size={28} className="text-primary" />
+            Dashboard
+          </h2>
           <p>Ringkasan data statistik PT MPN</p>
         </div>
 
@@ -97,7 +103,7 @@ const Dashboard = () => {
             const IconComponent = stat.icon;
             return (
               <div className="col-12 col-md-6 col-xl-3" key={index}>
-                <div 
+                <div
                   className="stat-card-clean"
                   style={{ cursor: stat.path ? "pointer" : "default" }}
                   onClick={() => stat.path && navigate(stat.path)}
@@ -134,7 +140,6 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-
       </div>
     </DashboardLayout>
   );

@@ -87,8 +87,8 @@ export default function Partner() {
       <div className="page-container">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
-            <h2 className="fw-bold d-flex align-items-center gap-2">
-              <Handshake size={26} className="text-primary" /> Partner
+            <h2 className="fw-bold fs-3 d-flex align-items-center gap-2 mb-1">
+              <Handshake size={28} className="text-primary" /> Partner
             </h2>
             <p className="text-muted mb-0">Kelola logo dan deskripsi partner</p>
           </div>

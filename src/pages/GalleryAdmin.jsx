@@ -4,7 +4,7 @@ import CardItem from "../components/CardItem";
 import ModalItem from "../components/ModalItem";
 import Pagination from "../components/Pagination";
 import { toast, ToastContainer } from "react-toastify";
-import { Image as ImageIcon, Plus } from "lucide-react";
+import { Image as ImageIcon, Images, Plus } from "lucide-react";
 import { getGallery, createGallery, updateGallery, deleteGallery } from "../api/galleryApi";
 import { resolveUploadUrl } from "../utils/url";
 import { useAuth } from "../contexts/AuthContext";
@@ -103,8 +103,8 @@ export default function GalleryAdmin() {
       <div className="page-container">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
-            <h2 className="fw-bold d-flex align-items-center gap-2 mb-1">
-              <ImageIcon size={24} className="text-primary" /> Galeri
+            <h2 className="fw-bold fs-3 d-flex align-items-center gap-2 mb-1">
+              <Images size={28} className="text-primary" /> Galeri
             </h2>
             <p className="text-muted mb-0">Kelola foto-foto yang tampil di website</p>
           </div>

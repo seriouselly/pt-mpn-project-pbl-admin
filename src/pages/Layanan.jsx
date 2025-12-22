@@ -3,13 +3,19 @@ import DashboardLayout from "../components/layout/DashboardLayout";
 import CardItem from "../components/CardItem";
 import ModalItem from "../components/ModalItem";
 import Pagination from "../components/Pagination";
-import { getLayanan, createLayanan, updateLayanan, deleteLayanan } from "../api/layananApi";
+import {
+  getLayanan,
+  createLayanan,
+  updateLayanan,
+  deleteLayanan,
+} from "../api/layananApi";
 import { ToastContainer, toast } from "react-toastify";
 import { Briefcase, ArrowUpDown, Plus } from "lucide-react";
 import { resolveUploadUrl } from "../utils/url";
 
 // Helper URL Gambar
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://202.10.47.174:8000";
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://202.10.47.174:8000";
 
 export default function Layanan() {
   const [data, setData] = useState([]);
@@ -20,22 +26,39 @@ export default function Layanan() {
   const [loading, setLoading] = useState(true);
 
   const [show, setShow] = useState(false);
-  const [form, setForm] = useState({ id: null, nama: "", deskripsi: "", foto: "", foto_file: null });
+  const [form, setForm] = useState({
+    id: null,
+    nama: "",
+    deskripsi: "",
+    foto: "",
+    foto_file: null,
+  });
 
   // 1. Load Data
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const res = await getLayanan();
-      const rawData = Array.isArray(res) ? res : (res.data || []);
-      
-      const mapped = rawData.map(item => ({
-        ...item,
-        id: item.id_BUsaha,
-        nama: item.nama_BUsaha,
-        deskripsi: item.deskripsi,
-        foto: resolveUploadUrl(BASE_URL, item.poto)
-      }));
+      const rawData = Array.isArray(res) ? res : res.data || [];
+
+      // console.log("🔄 LOAD DATA - Timestamp:", new Date().toLocaleTimeString());
+
+      const mapped = rawData.map((item) => {
+        // Handle inconsistent field names from backend (poto vs potos)
+        const fotoPath = item.poto || item.potos || "";
+        const finalURL =
+          resolveUploadUrl(BASE_URL, fotoPath) + "?v=" + Math.random();
+
+        // console.log(`📸 ${item.nama_BUsaha}: ${fotoPath} → ${finalURL}`);
+
+        return {
+          ...item,
+          id: item.id_BUsaha,
+          nama: item.nama_BUsaha,
+          deskripsi: item.deskripsi,
+          foto: finalURL,
+        };
+      });
       setData(mapped);
     } catch (e) {
       console.error(e);
@@ -44,7 +67,9 @@ export default function Layanan() {
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
   // 2. Logic Sortir & Filter
   const processedData = useMemo(() => {
@@ -53,7 +78,7 @@ export default function Layanan() {
     // Filter
     if (search) {
       const q = search.toLowerCase();
-      result = result.filter(d => d.nama.toLowerCase().includes(q));
+      result = result.filter((d) => d.nama.toLowerCase().includes(q));
     }
 
     // Sortir (Fitur khas Layanan)
@@ -74,20 +99,28 @@ export default function Layanan() {
 
   // 3. Handlers
   const changeSort = (key) => {
-    setSort(prev => ({
+    setSort((prev) => ({
       key,
-      dir: prev.key === key && prev.dir === "asc" ? "desc" : "asc"
+      dir: prev.key === key && prev.dir === "asc" ? "desc" : "asc",
     }));
   };
 
   const submit = async () => {
-    if (!form.nama) { toast.warn("Nama layanan wajib diisi"); return; }
-    
+    if (!form.nama) {
+      toast.warn("Nama layanan wajib diisi");
+      return;
+    }
+
     // Trik Deskripsi
     let safeDeskripsi = form.deskripsi || "";
-    if (safeDeskripsi.trim().length < 10) safeDeskripsi += " (Deskripsi layanan)";
+    if (safeDeskripsi.trim().length < 10)
+      safeDeskripsi += " (Deskripsi layanan)";
 
-    const payload = { nama: form.nama, deskripsi: safeDeskripsi, gambar_file: form.foto_file };
+    const payload = {
+      nama: form.nama,
+      deskripsi: safeDeskripsi,
+      foto_file: form.foto_file,
+    };
 
     try {
       if (form.id) {
@@ -98,7 +131,14 @@ export default function Layanan() {
         toast.success("Layanan ditambah");
       }
       setShow(false);
-      load();
+
+      // Force clear form to prevent stale data
+      setForm({ id: null, nama: "", deskripsi: "", foto: "", foto_file: null });
+
+      // Add delay to ensure backend finishes file write
+      setTimeout(() => {
+        load();
+      }, 1500);
     } catch (e) {
       console.error(e);
       toast.error(e.message || "Gagal menyimpan data");
@@ -122,41 +162,67 @@ export default function Layanan() {
         {/* Header */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
-            <h2 className="fw-bold d-flex align-items-center gap-2 mb-1">
-              <Briefcase size={28} className="text-primary"/> Layanan
+            <h2 className="fw-bold fs-3 d-flex align-items-center gap-2 mb-1">
+              <Briefcase size={32} className="text-primary" /> Layanan
             </h2>
             <p className="text-muted mb-0">Kelola Bidang Usaha Utama</p>
           </div>
-          <button className="btn btn-primary d-flex align-items-center gap-2" onClick={() => { 
-            setForm({ id: null, nama: "", deskripsi: "", foto: "", foto_file: null }); 
-            setShow(true); 
-          }}>
+          <button
+            className="btn btn-primary d-flex align-items-center gap-2"
+            onClick={() => {
+              setForm({
+                id: null,
+                nama: "",
+                deskripsi: "",
+                foto: "",
+                foto_file: null,
+              });
+              setShow(true);
+            }}
+          >
             <Plus size={18} /> Tambah Layanan
           </button>
         </div>
 
         {/* Toolbar: Search & Sort */}
         <div className="bg-white p-3 rounded shadow-sm mb-4 d-flex justify-content-between align-items-center">
-          <input 
-            className="form-control" style={{maxWidth: 300}}
-            placeholder="Cari layanan..." 
-            value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} 
+          <input
+            className="form-control"
+            style={{ maxWidth: 300 }}
+            placeholder="Cari layanan..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
           />
-          <button className={`btn btn-sm ${sort.key === 'nama' ? 'btn-info text-white' : 'btn-outline-secondary'} d-flex align-items-center gap-2`} onClick={() => changeSort("nama")}>
+          <button
+            className={`btn btn-sm ${
+              sort.key === "nama"
+                ? "btn-info text-white"
+                : "btn-outline-secondary"
+            } d-flex align-items-center gap-2`}
+            onClick={() => changeSort("nama")}
+          >
             <ArrowUpDown size={14} /> Urutkan Nama
           </button>
         </div>
 
         {/* --- TAMPILAN GRID KARTU (KHUSUS LAYANAN) --- */}
-        {loading ? <div className="text-center p-5">Memuat data...</div> : (
+        {loading ? (
+          <div className="text-center p-5">Memuat data...</div>
+        ) : (
           <div className="grid-cards">
-            {paginated.map(it => (
-              <CardItem 
-                key={it.id} 
-                variant="layanan" 
-                item={it} 
-                onEdit={() => { setForm({ ...it, foto_file: null }); setShow(true); }} 
-                onDelete={() => handleDelete(it.id)} 
+            {paginated.map((it) => (
+              <CardItem
+                key={it.id}
+                variant="layanan"
+                item={it}
+                onEdit={() => {
+                  setForm({ ...it, foto_file: null });
+                  setShow(true);
+                }}
+                onDelete={() => handleDelete(it.id)}
               />
             ))}
           </div>
@@ -171,14 +237,14 @@ export default function Layanan() {
           fields={[
             { name: "nama", label: "Nama Bidang Usaha", type: "text" },
             { name: "deskripsi", label: "Deskripsi", type: "textarea" },
-            { name: "foto", label: "Foto", type: "foto" }
+            { name: "foto", label: "Foto", type: "foto" },
           ]}
           value={form}
           onChange={setForm}
           onSubmit={submit}
           onClose={() => setShow(false)}
         />
-        <ToastContainer position="top-right"/>
+        <ToastContainer position="top-right" />
       </div>
     </DashboardLayout>
   );

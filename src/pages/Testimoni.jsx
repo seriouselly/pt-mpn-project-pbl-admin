@@ -6,6 +6,7 @@ import Pagination from "../components/Pagination";
 import { getTestimoni, createTestimoni, updateTestimoni, deleteTestimoni } from "../api/testimoniApi";
 import { ToastContainer, toast } from "react-toastify";
 import { resolveUploadUrl } from "../utils/url";
+import { Star } from "lucide-react";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://202.10.47.174:8000";
 
@@ -91,7 +92,8 @@ export default function Testimoni() {
       <div className="page-container">
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
           <div style={{ flex: 1 }}>
-            <h2>Testimoni</h2>
+            <h2 className="fw-bold fs-3 d-flex align-items-center gap-2 mb-1">
+              <Star size={28} className="text-primary" /> Testimoni</h2>
             <div className="page-subtitle">Ulasan dari pengguna</div>
           </div>
           <button className="btn btn-primary" onClick={() => { setForm({ id: null, nama: "", testimoni: "", foto: "", foto_file: null }); setShow(true); }}>+ Tambah Testimoni</button>
