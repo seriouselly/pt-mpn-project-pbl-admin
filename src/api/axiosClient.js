@@ -3,8 +3,8 @@ import axios from 'axios';
 // Gunakan path relatif saat dev (localhost/127.0.0.1) agar lewat proxy Vite dan lolos CORS
 const isLocalDev = typeof window !== "undefined" && ["localhost", "127.0.0.1"].includes(window.location.hostname);
 const axiosClient = axios.create({
-  // Di produksi fallback ke BASE_URL runtime
-  baseURL: isLocalDev ? "" : (import.meta.env.VITE_API_BASE_URL || "http://202.10.47.174:8000"),
+  // Di produksi gunakan BASE_URL dari environment variable
+  baseURL: isLocalDev ? "" : import.meta.env.VITE_API_BASE_URL,
   withCredentials: true, // Wajib: Agar cookie token tersimpan
   headers: {
     'Content-Type': 'application/json',
